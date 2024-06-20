@@ -16,6 +16,8 @@ WPM_ENABLE = no
 ENCODER_ENABLE = no
 RGBLIGHT_ENABLE = no
 
+INTROSPECTION_KEYMAP_C = ardux.c
+
 ##########
 # Enable LTO if possible (graphics on avr mainly)
 ifneq ($(PLATFORM),CHIBIOS)
@@ -40,10 +42,6 @@ endif
 ##########
 # Combo engine related
 VPATH += keyboards/gboards/
-
-###########
-# ARDUX Sources
-SRC += ardux.c
 
 ##########
 # Set size for all build steps

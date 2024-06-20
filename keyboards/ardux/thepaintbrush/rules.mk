@@ -13,8 +13,13 @@ LTO_ENABLE = no # We support arm qmk devices which are incompatabl with this avr
 
 # Work around limitation with userland and the way we have 'dynamic' direct wiring
 #     This *should* live in config.h but KemoNine can't figure out how to check which keymap is in use at that level
-PINS_HAND_LEFT = -DDIRECT_PINS="{ { F7, F6, F5, F4 }, { B6, B2, B3, B1 } }"
-PINS_HAND_RIGHT = -DDIRECT_PINS="{ { F4, F5, F6, F7 }, { B1, B3, B2, B6 } }"
+#PINS_HAND_LEFT = -DDIRECT_PINS="{ { F7, F6, F5, F4 }, { B6, B2, B3, B1 } }"
+#PINS_HAND_RIGHT = -DDIRECT_PINS="{ { F4, F5, F6, F7 }, { B1, B3, B2, B6 } }"
+
+# RP2040 pins
+PINS_HAND_RIGHT	 = -DDIRECT_PINS="{ { 2, 3, 4, 5 }, { 6, 7, 8, 9 } }"
+PINS_HAND_LEFT = -DDIRECT_PINS="{ { 10, 11, 12, 13 }, { 18, 19, 20, 21 } }"
+
 ifeq ($(KEYBOARD), ardux/thepaintbrush)
 	ifeq ($(KEYMAP), left)
 		OPT_DEFS += $(PINS_HAND_LEFT)
