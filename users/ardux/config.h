@@ -4,8 +4,12 @@
 #pragma once
 
 // //////////
-// RGB 'stuff' is unsupported
+// RGB 'stuff' is generally unsupported
 #undef RGBLIGHT_ANIMATIONS
+#ifdef ARDUX_LAYER_UNDERGLOW
+#define RGBLIGHT_LAYERS
+#define RGBLIGHT_MAX_LAYERS 32
+#endif
 
 // //////////
 // Combos Config
