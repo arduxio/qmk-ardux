@@ -2,6 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 
+/////////////
+// kb2040 qwiic & neopixel support
+#ifdef CONVERT_TO_KB2040
+#define SOFT_SERIAL_PIN D5
+#define RGB_DI_PIN 17
+#endif
+
 // /////////
 // User remixes / tweaks -- these take precidence above all else
 #if __has_include("../remixes/boards/crkbd_rev1.h")
