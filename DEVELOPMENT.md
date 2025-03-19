@@ -41,6 +41,7 @@ cd /qmk_firmware/users/ardux
 # ENCODER_ENABLE whether or not to include encoder support. default: no ; uses just over 1k of rom space which is quite large
 # RGBLIGHT_ENABLE whether or not to turn on some underglow features. default: no ; uses a TON of rom space and we need a lot for 40% ardux to work
 # SPLIT_USB_DETECT use this option (see kemo builds) when using an unmodified miranda or old elite-c
+# ARDUX_LAYER_UNDERGLOW use this to enable layer underglow support. NOTE: this likely will *not work* with avr
 qmk -v compile -e ALLOW_WARNINGS=yes
                -e ARDUX_SIZE=[std|big|40p] \
                -e ARDUX_HAND=[left|right] \
@@ -60,6 +61,7 @@ qmk -v compile -e ALLOW_WARNINGS=yes
                -e ONESHOT_TIMEOUT=1500 \
                -e ENCODER_ENABLE=[yes|no] \
                -e RGBLIGHT_ENABLE=[yes|no] \
+               -e ARDUX_LAYER_UNDERGLOW=[yes|no] \
        layout/[board.json]
 ```
 
@@ -72,17 +74,15 @@ An unmodified MelMicro and some knock off ProMicro boards require `-e SPLIT_USB_
 ```
 root@d8949d0fe972:/qmk_firmware/users/ardux# 
 # Corne (6 column) 40%
-rm -rf ../../.build/* && qmk -v compile \
-    -e SPLIT_USB_DETECT=yes \
-    -e OLED_BRIGHTNESS=64 \
-    -e PIMORONI_BRIGHTNESS=7 \
-    -e PIMORONI_RGB="255,165,0" \
-    -e ARDUX_PIMORONI=no \
-    -e ARDUX_EXCLAMATION=KC_SCLN \
+qmk clean && qmk compile \
+    -e ALLOW_WARNINGS=yes \
     -e ARDUX_SIZE=40p \
     -e ARDUX_HAND=left \
-    -e TAPPING_TERM=200 \
-    layout/crkbd_rev1_40p.json
+    -e ARDUX_LAYER_UNDERGLOW=yes \
+    -e ARDUX_REMIX=yes \
+	-e CONVERT_TO=kb2040 \
+	-e OLED_ENABLE=no \
+	layout/crkbd_rev1_40p.json
 
 # The Paintbrush
 rm -rf ../../.build/* && qmk -v compile \
