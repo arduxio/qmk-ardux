@@ -187,70 +187,48 @@ Sometimes when you’re deep in combo shenanigans you need access to process_com
 
 Also see [http://combos.gboards.ca/docs/combos/](http://combos.gboards.ca/docs/manage/)
 
-## Visual Studio Code
-
-This repo is setup to allow doing local development using the `Dev Containers` features. If you're familiar with these features they should generally 'Just Work'.
-
 ## Docker
 
-### Run
+Below is an example of how to setup a Docker dev environment using a Linux computer.
 
 ``` sh
-# PowerShell
-#     Use ` instead of \
-#     Use ${PWD} instead of $(pwd)
-docker run --rm -it `
-  -v qmk_firmware:/qmk_firmware `
-  -v $(pwd)/.build:/qmk_firmware/.build `
-  -v $(pwd)/users/ardux:/qmk_firmware/users/ardux `
-  qmkfm/qmk_cli /bin/bash
- ```
+# Start container
+cd /scratch/keeb
+sudo docker run --rm -it -v .:/workspace ghcr.io/qmk/qmk_cli:latest /bin/bash
 
-### Update / Clone Sources
+# Get / setup sources
+git clone --branch 0.18.5 https://github.com/qmk/qmk_firmware.git \
+	/workspace/qmk_firmware
+git clone https://github.com/arduxio/qmk-ardux.git \
+	/workspace/qmk_ardux
+# Personal remix
+git clone https://github.com/mcrosson/keyboard.git \
+	/workspace/kmn_keeb
 
-``` sh
-# PowerShell
-#     Use ` instead of \
-docker run --rm -it \
-  -v qmk_firmware:/qmk_firmware \
-  qmkfm/qmk_cli /bin/bash
+# Setup ardux & remix inside qmk src
+ln -sf /workspace/qmk_ardux/keyboards/ardux \
+	/workspace/qmk_firmware/keyboards/ardux
+ln -sf /workspace/qmk_ardux/users/ardux \
+	/workspace/qmk_firmware/users/ardux
+# Personal remix
+ln -sf /workspace/kmn_keeb/qmk/users/ardux/layout/remixes/ \
+	/workspace/qmk_firmware/users/ardux/layout/remixes
 
-cd ~/qmk_firmware
-if [ -d ~/qmk_firmware/.git ]; 
-then 
-    cd ~/qmk_firmware;
-    git pull; 
-else 
-    git clone https://github.com/qmk/qmk_firmware.git ~/qmk_firmware/; 
-fi
-if [ ! -d ~/qmk_firmware/keyboards/ardux ];
-then
-    ln -s "~/qmk-ardux/keyboards/ardux" ~/qmk_firmware/keyboards/ardux;
-    echo "Created keyboards/ardux symlink";
-fi
-if [ ! -d ~/qmk_firmware/keyboards/faunchpad ];
-then
-    ln -s "~/qmk_gboards/keyboards/faunchpad" ~/qmk_firmware/keyboards/faunchpad;
-    echo "Created keyboards/faunchpad symlink";
-fi
-if [ ! -d ~/qmk_firmware/users/ardux ];
-then
-    ln -s "~/qmk-ardux/users/ardux" ~/qmk_firmware/users/ardux;
-    echo "Created users/ardux symlink";
-fi
-qmk setup -y;
+# Setup qmk
+/usr/bin/python3 -m pip install \
+	--break-system-packages --user \
+	-r /workspace/qmk_firmware/requirements.txt
+qmk setup -y -H /workspace/qmk_firmware
+qmk help # should show an error & compile as a sub command
+
+# Build ardux
+cd /workspace/qmk_firmware/users/ardux
+qmk clean
+qmk compile \
+    -e ALLOW_WARNINGS=yes \
+    -e ARDUX_SIZE=40p \
+    -e ARDUX_HAND=left \
+    -e CONVERT_TO=promicro_rp2040 \
+    -e ARDUX_REMIX=yes \
+	layout/crkbd_rev1_40p.json
 ```
-
-### Volumes
-
-#### QMK Sources
-
-`qmkfm/qmk_cli` lacks sources. Use named volume to speed dev and output
-
-#### ARDUX
-
-Need to have the `qmk/users/ardux` directory mounted at `/qmk_firmware/users/ardux` in Docker container
-
-#### Build output
-
-Need to have a local dir for build artifact extraction at `/qmk_firmware/.build`

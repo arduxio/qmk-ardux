@@ -1,5 +1,0 @@
-FROM qmk-ardux:latest
-
-RUN apt-get update && apt-get install -y \
-    gcc-arm-none-eabi \
-    && rm -rf /var/lib/apt/lists/* && apt-get clean
