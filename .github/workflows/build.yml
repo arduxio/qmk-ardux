@@ -157,11 +157,11 @@ jobs:
           #   hand: right
           #   size: 40p
           #   fwext: hex
-          - layout: splitkb_kyria_rev2_40p
-            hand: right
-            size: 40p
-            fwext: hex
-            args: ~
+          #- layout: splitkb_kyria_rev2_40p
+          #  hand: right
+          #  size: 40p
+          #  fwext: hex
+          #  args: ~
           - layout: splitkb_kyria_rev2_40p
             hand: left
             size: 40p
