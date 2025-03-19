@@ -119,32 +119,32 @@ jobs:
             size: big
             fwext: hex
             args: ~
-          - layout: crkbd_rev1
+          - layout: crkbd_rev1_40p
             hand: left
             size: 40p
             fwext: hex
             args: ~
-          - layout: crkbd_rev1
+          - layout: crkbd_rev1_40p
             hand: right
             size: 40p
             fwext: hex
             args: ~
-          - layout: ferris_sweep
+          - layout: ferris_sweep_40p
             hand: left
             size: 40p
             fwext: hex
             args: ~
-          - layout: ferris_sweep
+          - layout: ferris_sweep_40p
             hand: right
             size: 40p
             fwext: hex
             args: ~
-          - layout: draculad
+          - layout: draculad_40p
             hand: left
             size: 40p
             fwext: hex
             args: ~
-          - layout: draculad
+          - layout: draculad_40p
             hand: right
             size: 40p
             fwext: hex
@@ -157,12 +157,12 @@ jobs:
           #   hand: right
           #   size: 40p
           #   fwext: hex
-          - layout: splitkb_kyria_rev2
-            hand: right
-            size: 40p
-            fwext: hex
-            args: ~
-          - layout: splitkb_kyria_rev2
+          #- layout: splitkb_kyria_rev2_40p
+          #  hand: right
+          #  size: 40p
+          #  fwext: hex
+          #  args: ~
+          - layout: splitkb_kyria_rev2_40p
             hand: left
             size: 40p
             fwext: hex
@@ -211,7 +211,17 @@ jobs:
       - name: Debug - ls build artifact folder
         run: ls /qmk_firmware/.build
       - name: Prep artifacts
-        run: cp /qmk_firmware/.build/${{ matrix.layout }}_ardux.${{ matrix.fwext }} /qmk_firmware/.build/ardux-${{ matrix.layout }}-${{ matrix.size }}-${{ matrix.hand }}.${{ matrix.fwext }} 
+        shell: bash
+        run: |
+            ls /qmk_firmware/.build/ ;
+            if [[ "${{ matrix.layout }}" =~ .*_40p$ ]];
+            then
+              layout="${{ matrix.layout }}"
+              base=${layout/%_40p}
+              cp /qmk_firmware/.build/${base}_ardux.${{ matrix.fwext }} /qmk_firmware/.build/ardux-${{ matrix.layout}}-${{ matrix.size }}-${{ matrix.hand }}.${{ matrix.fwext }}
+            else
+              cp /qmk_firmware/.build/${{ matrix.layout }}_ardux.${{ matrix.fwext }} /qmk_firmware/.build/ardux-${{ matrix.layout }}-${{ matrix.size }}-${{ matrix.hand }}.${{ matrix.fwext }}
+            fi
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
