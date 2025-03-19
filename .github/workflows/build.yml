@@ -181,8 +181,7 @@ jobs:
         run: |
             if [ -d /qmk_firmware/.git ]; 
             then 
-                cd /qmk_firmware;
-                git pull; 
+                echo "ignoring qmk updates as we are on a disconnected head"
             else 
                 git clone --branch 0.18.5 https://github.com/qmk/qmk_firmware.git /qmk_firmware/; 
             fi
