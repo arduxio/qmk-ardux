@@ -28,19 +28,19 @@ bool is_caps_lock_on(void) {
 // /////////
 #ifdef ARDUX_LAYER_UNDERGLOW
 const rgblight_segment_t PROGMEM ardux_big[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 1, HSV_BLUE}
+    {0, RGBLIGHT_LED_COUNT, HSV_BLUE}
 );
 const rgblight_segment_t PROGMEM ardux_40p[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 1, HSV_CYAN}
+    {0, RGBLIGHT_LED_COUNT, HSV_CYAN}
 );
 const rgblight_segment_t PROGMEM ardux_misc[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 1, HSV_PURPLE}
+    {0, RGBLIGHT_LED_COUNT, HSV_PURPLE}
 );
 const rgblight_segment_t PROGMEM ardux_toggle_key[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 1, HSV_ORANGE}
+    {0, RGBLIGHT_LED_COUNT, HSV_ORANGE}
 );
 const rgblight_segment_t PROGMEM ardux_toggle_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 1, HSV_RED}
+    {0, RGBLIGHT_LED_COUNT, HSV_RED}
 );
 
 
@@ -52,65 +52,74 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     ardux_toggle_layer
 );
 
-void clear_rgb_layer_colors() {
-    rgblight_set_layer_state(0, false);
-    rgblight_set_layer_state(1, false);
-    rgblight_set_layer_state(2, false);
-    rgblight_set_layer_state(3, false);
-    rgblight_set_layer_state(4, false);
-}
-
-uint8_t which_rgb_layer(layer_state_t state) {
-    // shift lock takes priority over layers
+void update_rgblight_layer_toggle_keys() {
     if (get_mods() & MOD_BIT(KC_LSFT)
-        || is_caps_lock_on()) {
-        return 3;
+            || is_caps_lock_on()) {
+        rgblight_set_layer_state(3, true);
     }
-
-    // technically multiple layers can be active at the same time
-    // prioritize check for layers that tend to flip on/off the most
-
-    if ( layer_state_cmp(state, LAYER_ID_MOUSE)
-        || layer_state_cmp(state, LAYER_ID_NAVIGATION)
-        || layer_state_cmp(state, LAYER_ID_BIG_FUN) ) {
-        return 4;
+    else {
+        rgblight_set_layer_state(3, false);
     }
-
-    if ( layer_state_cmp(state, LAYER_ID_NUMBERS)
-        || layer_state_cmp(state, LAYER_ID_SYMBOLS)
-        || layer_state_cmp(state, LAYER_ID_PARENTHETICALS)
-        || layer_state_cmp(state, LAYER_ID_CUSTOM)
-        || layer_state_cmp(state, LAYER_ID_BIG_SYM) 
-        || layer_state_cmp(state, LAYER_ID_40P_NAVIGATION)
-        || layer_state_cmp(state, LAYER_ID_40P_FUNCTION) ) {
-            return 2;
-    }
-
-    if ( layer_state_cmp(state, LAYER_ID_BASE) ) {
-            return 0;
-    }
-
-    if ( layer_state_cmp(state, LAYER_ID_40P_BASE) ) {
-            return 1;
-    }
-
-    return 0;
+    rgblight_set(); // Flush out led buffers to LEDs
 }
 
 bool led_update_user(led_t led_state) {
-    rgblight_set_layer_state(3, led_state.caps_lock);
+    update_rgblight_layer_toggle_keys();
     return true;
 }
 
-layer_state_t layer_state_set_kb(layer_state_t state) {
-    clear_rgb_layer_colors();
-    rgblight_set_layer_state(which_rgb_layer(state), true);
+layer_state_t default_layer_state_set_user(layer_state_t state) {
+    // this function is called during init, assume its to activate the default layer
+    //      which should be one handed mode
+    // default layer active on startup
+    rgblight_set_layer_state(0, layer_state_cmp(state, LAYER_ID_BASE));
+    rgblight_set(); // Flush out led buffers to LEDs
     return state;
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    clear_rgb_layer_colors();
-    rgblight_set_layer_state(which_rgb_layer(state), true);
+    // big ardux
+    if (layer_state_cmp(state, LAYER_ID_BASE)) {
+        rgblight_set_layer_state(0, true);
+    }
+    else {
+        rgblight_set_layer_state(0, false);
+    }
+
+    // 40% ardux
+    if (layer_state_cmp(state, LAYER_ID_40P_BASE)) {
+        rgblight_set_layer_state(1, true);
+    }
+    else {
+        rgblight_set_layer_state(1, false);
+    }
+
+    // misc (temp layers, etc)
+    if (layer_state_cmp(state, LAYER_ID_NUMBERS)
+            || layer_state_cmp(state, LAYER_ID_SYMBOLS)
+            || layer_state_cmp(state, LAYER_ID_PARENTHETICALS)
+            || layer_state_cmp(state, LAYER_ID_CUSTOM)
+            || layer_state_cmp(state, LAYER_ID_BIG_SYM) 
+            || layer_state_cmp(state, LAYER_ID_40P_NAVIGATION)
+            || layer_state_cmp(state, LAYER_ID_40P_FUNCTION)) {
+        rgblight_set_layer_state(2, true);
+    }
+    else {
+        rgblight_set_layer_state(2, false);
+    }
+
+    // toggle layers (mouse, nav, etc)
+    if (layer_state_cmp(state, LAYER_ID_MOUSE)
+            || layer_state_cmp(state, LAYER_ID_NAVIGATION)
+            || layer_state_cmp(state, LAYER_ID_BIG_FUN)) {
+        rgblight_set_layer_state(4, true);
+    }
+    else {
+        rgblight_set_layer_state(4, false);
+    }
+
+    rgblight_set(); // Flush out led buffers to LEDs
+
     return state;
 }
 #endif
@@ -119,7 +128,10 @@ void keyboard_post_init_user(void) {
     // Enable the LED layers
 #ifdef ARDUX_LAYER_UNDERGLOW
     rgblight_layers = my_rgb_layers;
-    rgblight_set_layer_state(0, true);
+    // disable light on startup / default to avoid the default of 'red' from
+    // overlapping with our custom layer lighting status
+    rgblight_sethsv(HSV_OFF);
+    rgblight_set(); // Flush out led buffers to LEDs
 #endif
 
 #ifdef POINTING_DEVICE_ENABLE
@@ -133,16 +145,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 if (get_mods() & MOD_BIT(KC_LSFT)) {
                     unregister_mods(MOD_BIT(KC_LSFT));
-                    #ifdef ARDUX_LAYER_UNDERGLOW
-                    clear_rgb_layer_colors();
-                    rgblight_set_layer_state(which_rgb_layer(layer_state), true);
+#ifdef ARDUX_LAYER_UNDERGLOW
+                    update_rgblight_layer_toggle_keys();
 #endif
                 }
                 else {
                     register_mods(MOD_BIT(KC_LSFT));
 #ifdef ARDUX_LAYER_UNDERGLOW
-                    clear_rgb_layer_colors();
-                    rgblight_set_layer_state(3, true);
+                    update_rgblight_layer_toggle_keys();
 #endif
                 }
             }

@@ -6,7 +6,15 @@
 // kb2040 qwiic & neopixel support
 #ifdef CONVERT_TO_KB2040
 #define SOFT_SERIAL_PIN D5
+#ifdef ARDUX_LAYER_UNDERGLOW
 #define RGB_DI_PIN 17
+#ifdef ARDUX_SIZE_40P
+#define RGBLIGHT_LED_COUNT 2
+#define RGBLED_SPLIT { 1, 1 }
+#else
+#define RGBLIGHT_LED_COUNT 1
+#endif
+#endif
 #endif
 
 // /////////
