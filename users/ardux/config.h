@@ -4,21 +4,6 @@
 #pragma once
 
 // //////////
-// RGB 'stuff' is generally unsupported
-#ifdef ARDUX_LAYER_UNDERGLOW
-#define RGBLIGHT_LAYERS
-#define RGBLIGHT_MAX_LAYERS 32
-// disable light on startup / default to avoid the default of 'red' from
-// overlapping with our custom layer lighting status
-#define RGBLIGHT_DEFAULT_HUE 0
-#define RGBLIGHT_DEFAULT_SAT 0
-#define RGBLIGHT_DEFAULT_VAL 0
-#ifdef ARDUX_SIZE_40P
-#define RGBLIGHT_SPLIT
-#endif
-#endif
-
-// //////////
 // Combos Config
 #include "layout/layer_ids.h"
 #define EXTRA_LONG_COMBOS
@@ -54,6 +39,34 @@
 #define MASTER_RIGHT
 #endif
 
+// /////////
+// Remove Layer count restrictions
+#ifdef LAYER_STATE_8BIT
+#undef LAYER_STATE_8BIT
+#endif
+#ifdef MAX_LAYER
+#undef MAX_LAYER
+#endif
+
+// //////////
+// RGB 'stuff' is generally unsupported
+#ifdef ARDUX_LAYER_UNDERGLOW
+#define RGBLIGHT_LAYERS
+#define RGBLIGHT_MAX_LAYERS 32
+// disable light on startup / default to avoid the default of 'red' from
+// overlapping with our custom layer lighting status
+#define RGBLIGHT_DEFAULT_HUE 0
+#define RGBLIGHT_DEFAULT_SAT 0
+#define RGBLIGHT_DEFAULT_VAL 0
+#ifdef ARDUX_SIZE_40P
+#ifdef ARDUX_LAYER_UNDERGLOW_ONLY_PRIMARY
+#undef RGBLIGHT_SPLIT
+#else
+#define RGBLIGHT_SPLIT
+#endif
+#endif
+#endif
+
 // ////////
 // Pimoroni trackball
 #ifdef POINTING_DEVICE_ENABLE
@@ -66,15 +79,6 @@
 #define POINTING_DEVICE_INVERT_X
 #define POINTING_DEVICE_INVERT_Y
 #endif
-#endif
-
-// /////////
-// Remove Layer count restrictions
-#ifdef LAYER_STATE_8BIT
-#undef LAYER_STATE_8BIT
-#endif
-#ifdef MAX_LAYER
-#undef MAX_LAYER
 #endif
 
 // //////////

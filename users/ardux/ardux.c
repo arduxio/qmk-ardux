@@ -129,7 +129,9 @@ void keyboard_post_init_user(void) {
 #ifdef ARDUX_LAYER_UNDERGLOW
     rgblight_layers = my_rgb_layers;
     // disable light on startup / default to avoid the default of 'red' from
-    // overlapping with our custom layer lighting status
+    //     overlapping with our custom layer lighting status
+    // will also auto-off non primary half leds when only primary side of 40% should be lit
+    //     when ARDUX_LAYER_UNDERGLOW_ONLY_PRIMARY is specified at compile time
     rgblight_sethsv(HSV_OFF);
     rgblight_set(); // Flush out led buffers to LEDs
 #endif
