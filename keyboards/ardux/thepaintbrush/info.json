@@ -2,6 +2,16 @@
     "keyboard_name": "The Paintbrush",
     "url": "https://github.com/arduxio/qmk-artsey",
     "maintainer": "ardux",
+    "manufacturer": "ardux",
+    "usb": {
+      "device_version": "01.0.0",
+      "pid": "0x7E71",
+      "vid": "0x7E72"
+    },
+
+    "bootloader": "rp2040",
+    "processor": "RP2040",
+   
     "layouts": {
         "LAYOUT": {
             "layout": [
