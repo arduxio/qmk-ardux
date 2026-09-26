@@ -3,17 +3,39 @@
 #pragma once
 
 // /////////
+// User remixes / tweaks -- these take precidence above all standard definitions
+// (remix_shared_defines.h sits before shared_defines.h so its defines win over the guarded defaults)
+#if __has_include("remixes/remix_shared_defines.h")
+#include "remixes/remix_shared_defines.h"
+#endif
+
+// /////////
 // Shared defines (combo definitions need these too)
 #include "shared_defines.h"
 
 // /////////
 // User remixes / tweaks -- these take precidence above all standard definitions
-#if __has_include("remixes/remix_shared_defines.h")
-#include "remixes/remix_shared_defines.h"
-#endif
 #if __has_include("remixes/remix_layers.h")
 #include "remixes/remix_layers.h"
 #endif
+
+// /////////
+// Five column compile-out: never let 6th-column values reach five-column rows,
+// no matter what an earlier (remix or unconditional) define set
+#ifdef ARDUX_FIVE_COLUMN
+#undef LEFT_ANSI_SIX_ONE
+#undef LEFT_ANSI_SIX_TWO
+#undef LEFT_ANSI_SIX_THREE
+#undef RIGHT_ANSI_SIX_ONE
+#undef RIGHT_ANSI_SIX_TWO
+#undef RIGHT_ANSI_SIX_THREE
+#define LEFT_ANSI_SIX_ONE
+#define LEFT_ANSI_SIX_TWO
+#define LEFT_ANSI_SIX_THREE
+#define RIGHT_ANSI_SIX_ONE
+#define RIGHT_ANSI_SIX_TWO
+#define RIGHT_ANSI_SIX_THREE
+#endif // ARDUX_FIVE_COLUMN
 
 #ifndef ARDUX_STD_LAYER_BASE_LEFT
 #define ARDUX_STD_LAYER_BASE_LEFT \
